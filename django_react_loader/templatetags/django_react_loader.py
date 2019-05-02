@@ -2,7 +2,8 @@ import json
 import uuid
 
 from django import template
-from django.utils.html import conditional_escape
+from django.utils.functional import Promise
+from django.utils.html import conditional_escape, escape, escapejs
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -19,7 +20,7 @@ def react_component(component_name, **kwargs):
     
     kwargs_safe = mark_safe(
         json.dumps(
-            {conditional_escape_json(key): conditional_escape_json(value)
+            {conditional_escape_json(key): json.dumps(conditional_escape_json(value))
              for key, value in kwargs.items()}
         )
     )
@@ -41,12 +42,27 @@ def conditional_escape_json(obj):
     """
     if isinstance(obj, dict):
         return {
-            conditional_escape_json(key): conditional_escape_json(value)
+            key: json.dumps(conditional_escape_json(value))
             for key, value in obj.items()
         }
     elif isinstance(obj, list):
         return [conditional_escape_json(item) for item in obj]
     elif isinstance(obj, str):
-        return conditional_escape(obj)
+        return conditional_escapejs(obj)
     else:
         return obj
+
+
+def conditional_escapejs(text):
+    """
+    Similar to escape(), except that it doesn't operate on pre-escaped strings.
+
+    This function relies on the __html__ convention used both by Django's
+    SafeData class and by third-party libraries like markupsafe.
+    """
+    if isinstance(text, Promise):
+        text = str(text)
+    if hasattr(text, '__html__'):
+        return text.__html__()
+    else:
+        return escapejs(text)
