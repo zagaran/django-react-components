@@ -16,7 +16,7 @@ def dependency_checks(app_configs, **kwargs):
         if 'webpack_loader' not in settings.INSTALLED_APPS:
             errors.append(
                 Error(
-                    '`django-react-loader` requires `django-webpack-loader` to be installed.',
+                    '`django-react-components` requires `django-webpack-loader` to be installed.',
                     hint='Add `webpack_loader` to `settings.INSTALLED_APPS`.',
                     id='drl.E002',
                 )
@@ -24,7 +24,7 @@ def dependency_checks(app_configs, **kwargs):
     except ImportError:
         errors.append(
             Error(
-                '`django-react-loader` requires `django-webpack-loader` to be installed.',
+                '`django-react-components` requires `django-webpack-loader` to be installed.',
                 hint='Please install `django-webpack-loader`.',
                 id='drl.E001',
             )

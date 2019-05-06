@@ -36,8 +36,8 @@ setup(
     description='A collection of tools that assist with loading and rendering React components',
     license='MIT',
     long_description=README,
-    name='django-react-loader',
+    name='django-react-components',
     packages=find_packages(),
-    url='https://github.com/zagaran/django-react-loader',
+    url='https://github.com/zagaran/django-react-components',
     version='0.1.0a1',
 )

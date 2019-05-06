@@ -1,5 +1,5 @@
 """
-Template tags for django-react-loader>>
+Template tags for django-react-components
 """
 import json
 import uuid
