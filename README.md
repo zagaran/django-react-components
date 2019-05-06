@@ -29,11 +29,28 @@ generate stats to be consumed by `django-webpack-loader`.
 
 #### Rendering React Components
 
-In your templates, you can render React components by using the `{% react_component %}` template tag.
+In your templates, you can render React components by using the `{% react_component %}` template tag. To do so:
+
+1. Load the template tag and the `render_bundle` tag from `django_webpack_loader`:
 ```python
 {% load react_component from django_react_components %}
+{% load render_bundle from webpack_loader %}
 
-{% react_component 'App' id='app' props=props %}
+```
+
+2. Use `render_bundle` to pull in the appropriate javascript
+```
+<head>
+    {% render_bundle 'runtime' %}
+    {% render_bundle 'App' %} 
+</head>
+```
+
+3. Use the template tag to render the component, passing in keyword arguments as props
+```
+<body>
+    {% react_component 'App' id='app' prop1=prop1 prop2=prop2 %}
+</body>
 ```
 
 ## Requirements
