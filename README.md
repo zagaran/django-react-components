@@ -1,7 +1,7 @@
 # Django React Components
 
 Django React Components is a collection of tools that automate the loading and rendering of React components when used in
-conjunction with django-react-compiler. This tool is currently in beta. 
+conjunction with `django-react-loader`. This tool is currently in beta. 
 
 ## Installation
 
@@ -18,7 +18,7 @@ INSTALLED_APPS = (
 ```
 
 You will also need to install three other dependencies:
-- [`django-react-compiler`](https://github.com/zagaran/django-react-compiler): the JS counterpart to this
+- [`django-react-loader`](https://github.com/zagaran/django-react-loader): the JS counterpart to this
 package, used to serve the React components for `django-react-components` to load into Django templates.
 - [`django-webpack-loader`](https://github.com/owais/django-webpack-loader/): the Django dependency used to render the
 runtime bundles required for React to run.
