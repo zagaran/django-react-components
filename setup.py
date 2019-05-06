@@ -39,5 +39,5 @@ setup(
     name='django-react-components',
     packages=find_packages(),
     url='https://github.com/zagaran/django-react-components',
-    version='0.1.1-alpha',
+    version='0.1.2-alpha',
 )
