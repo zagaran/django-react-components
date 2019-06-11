@@ -46,10 +46,21 @@ In your templates, you can render React components by using the `{% react_compon
 </head>
 ```
 
-3. Use the template tag to render the component, passing in keyword arguments as props
+3a. Use the `react_component` tag to render the component with keyword arguments as props
 ```
 <body>
     {% react_component 'App' id='app' prop1=prop1 prop2=prop2 %}
+</body>
+```
+
+3a. Use the `react`/`endreact` tags to render the component with rendered content inside. This will be passed as raw HTML to the component as the `children` prop.
+```
+<body>
+    {% react 'App' id='app' %}
+        <h1>Hello World</h1>
+        <p>{{ content }}</p>
+        <a href='{% url 'endpoint' %}'>Link</a>
+    {% endreact 'App' id='app' %}
 </body>
 ```
 
