@@ -2,5 +2,5 @@
 *.pyc
 dist
 build
-.pythonversion
+.python-version
 .idea/
