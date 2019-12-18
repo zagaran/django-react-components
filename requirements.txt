@@ -4,6 +4,7 @@
 #
 #    pip-compile
 #
-django==2.2.8
+asgiref==3.2.3            # via django
+django==3.0.1
 pytz==2019.2              # via django
 sqlparse==0.3.0           # via django
