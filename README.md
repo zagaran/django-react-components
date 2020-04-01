@@ -5,29 +5,138 @@ conjunction with `django-react-loader`. This tool is currently in beta.
 
 ## Installation
 
-Install Django React Components using pip:
+Install `django-react-components` and [`django-webpack-loader`](https://github.com/owais/django-webpack-loader/) using pip:
 ```bash
-$ pip install django-react-components
+$ pip install django-react-components django-webpack-loader
 ```
-Add `django_react_components` to your `INSTALLED_APPS` in `settings.py`:
+Add both modules to your `INSTALLED_APPS` in `settings.py`:
 ```python
 INSTALLED_APPS = (
     ...,
     'django_react_components',
+    'webpack_loader',
 )
 ```
+## Requirements
 
-You will also need to install three other dependencies:
-- [`django-react-loader`](https://github.com/zagaran/django-react-loader): the JS counterpart to this
-package, used to serve the React components for `django-react-components` to load into Django templates.
-- [`django-webpack-loader`](https://github.com/owais/django-webpack-loader/): the Django dependency used to render the
-runtime bundles required for React to run.
-- [`webpack-bundle-tracker`](https://github.com/owais/webpack-bundle-tracker): the dependency used by Webpack to
-generate stats to be consumed by `django-webpack-loader`.
+### Python
+`django-react-components` relies on the [`django-webpack-loader`](https://github.com/owais/django-webpack-loader/) python module. Install it with `pip`:
+
+```bash
+$ pip install django-webpack-loader
+```
+
+### Javascript
+
+#### Global
+
+`django-react-components` uses `nwb` to compile compile React components. Install it globally:
+
+```bash
+$ npm install -g nwb
+```
+_or_
+```bash
+$ yarn global add nwb
+```
+ 
+ #### Local
+ 
+ `django-react-components` uses [`webpack-bundle-tracker`](https://github.com/owais/webpack-bundle-tracker) and a sibling package, [`django-react-loader`](https://github.com/zagaran/django-react-loader), to generate and render the react components. Install them locally:
+ 
+ ```bash
+$ npm install --save-dev django-react-loader webpack-bundle-tracker
+```
+_or_
+```bash
+$ yarn add django-react-loader webpack-bundle-tracker --dev
+```
 
 ## Usage
 
-#### Rendering React Components
+### Configuration
+
+You will need to create a file called `nwb.config.js` to confiugure `nwb` to properly compile your components. Check out `nwb`'s (configuration guide)[https://github.com/insin/nwb/blob/master/docs/Configuration.md#configuration-file] for more details. Also look at their (webpack configuration options)[https://github.com/insin/nwb/blob/master/docs/Configuration.md#webpack-configuration]. 
+
+In your config file, add `django-react-loader` as a loader to the webpack section of it. For example:
+
+```js
+// nwb.config.js
+
+module.exports = {
+  webpack: {
+    ...,
+    module: {
+      rules: [
+        {
+          loader: ['django-react-loader'],
+        },
+      ],
+    },
+  }
+};
+```
+
+The loader will run on every entry passed to the nwb config file. For example, if you wanted to load three react components:
+
+```js
+Comp1.js
+Comp2.js
+Comp3.js
+```
+
+your config file might look like this: 
+```js
+//nwb.config.js
+
+module.exports = {
+  webpack: {
+    ...,
+    entry: {
+      Comp1: './src/Comp1.js',
+      Comp2: './src/Comp2.js',
+      Comp3: './src/Comp3.js'
+    },
+  }
+};
+```
+
+The default export of each entry point will be compiled and attached to window on load using the key of the entry point in the config file, so in out example,:
+```js
+window.Comp1 // The component at './src/Comp1.js'
+window.Comp2 // The component at './src/Comp2.js'
+window.Comp1 // The component at './src/Comp3.js'
+```
+
+The template tags from `django-react-components` will run an initialization function on the code attached to window to create the component using the props provided to the template.
+
+### Setting up `webpack-bundle-tracker`
+
+You will also need to specify the locations to bundle the javascript with the `webpack-bundle-tracker`. For example:
+```js
+var path = require('path')
+var BundleTracker = require('webpack-bundle-tracker')
+module.exports = {
+  webpack: {
+    ...,
+    output: {
+      path: path.resolve('./dist/webpack_bundles/'), // Location for compiled files
+    },
+    plugins: [
+      new BundleTracker({filename: './webpack-stats.json'}), // Location for generated tracking file
+    ],
+  }
+};
+```
+### Compiling React Components
+
+Compile your react source code with `nwb`. Make sure to include the `-no-vendor` flag:
+
+```bash
+nwb build --no-vendor
+```
+
+### Rendering React Components
 
 In your templates, you can render React components by using the `{% react_component %}` template tag. To do so:
 
