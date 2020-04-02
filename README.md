@@ -138,11 +138,11 @@ nwb build --no-vendor
 
 ### Rendering React Components
 
-In your templates, you can render React components by using the `{% react_component %}` template tag. To do so:
+In your templates, you can render React components by using the `{% react_component %}` or the `{% react %}`template tag. To do so:
 
 1. Load the template tag and the `render_bundle` tag from `django_webpack_loader`:
 ```python
-{% load react_component from django_react_components %}
+{% load django_react_components %}
 {% load render_bundle from webpack_loader %}
 
 ```
@@ -162,7 +162,7 @@ In your templates, you can render React components by using the `{% react_compon
 </body>
 ```
 
-3a. Use the `react`/`endreact` tags to render the component with rendered content inside. This will be passed as raw HTML to the component as the `children` prop.
+3b. Use the `react`/`endreact` tags to render the component with rendered content inside. This will be passed as raw HTML to the component as the `children` prop.
 ```
 <body>
     {% react 'App' id='app' %}
