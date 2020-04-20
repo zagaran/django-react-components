@@ -39,6 +39,7 @@ def react_component(component_name, id=str(uuid.uuid4()), props=None, **kwargs):
         component_name=component_name,
     )
 
+
 class ReactBlockNode(template.Node):
     def __init__(self, component, nodelist, id=str(uuid.uuid4()), props=None, **kwargs):
         self.component = component
