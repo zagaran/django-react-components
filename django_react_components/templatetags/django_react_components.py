@@ -14,14 +14,16 @@ register = template.Library()
 
 
 @register.simple_tag
-def react_component(component_name, **kwargs):
+def react_component(component_name, id=str(uuid.uuid4()), props=None, **kwargs):
     """
     Render a React component with kwargs as attributes. This current requires that all kwargs
     being passed in be JSON-serializable.
     """
-    kwargs['id'] = kwargs.get('id', str(uuid.uuid4()))
-    props = json.dumps(kwargs).replace("</", "<\\/").replace("\\", "\\\\")
-
+    if props is None:
+        props = {}
+    props.update(id=id)
+    props.update(kwargs)
+    json_props = json.dumps(props).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
     react_component_html = """
         <div id="{html_id}"></div>
         <script type="text/javascript">
@@ -32,25 +34,28 @@ def react_component(component_name, **kwargs):
 
     return format_html(
         react_component_html,
-        props=mark_safe(props),
-        html_id=kwargs['id'],
+        props=mark_safe(json_props),
+        html_id=id,
         component_name=component_name,
     )
 
-
 class ReactBlockNode(template.Node):
-    def __init__(self, component, html_id, nodelist, **kwargs):
+    def __init__(self, component, nodelist, id=str(uuid.uuid4()), props=None, **kwargs):
         self.component = component
-        self.html_id = html_id
-        self.props = kwargs
+        self.html_id = id
+        self.props = props
+        self.kwargs = kwargs
         self.nodelist = nodelist
 
     def render(self, context):
         component = self.component.resolve(context)
         html_id = self.html_id.resolve(context)
-        resolved_props = {key: prop.resolve(context) for key, prop in self.props.items()}
+        resolved_props = {key: value.resolve(context) for key, value in self.kwargs.items()}
+        if self.props is not None:
+            resolved_props.update(self.props.resolve(context))
+        resolved_props['id'] = html_id
         resolved_props['children'] = self.nodelist.render(context)
-        serialized_props = json.dumps(resolved_props).replace("</", "<\\/").replace("\\", "\\\\")
+        json_props = json.dumps(resolved_props).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
         react_component_html = """
             <div id="{html_id}"></div>
             <script type="text/javascript">
@@ -60,7 +65,7 @@ class ReactBlockNode(template.Node):
         """
         return format_html(
             react_component_html,
-            props=mark_safe(serialized_props),
+            props=mark_safe(json_props),
             html_id=html_id,
             component=component
         )
@@ -69,7 +74,7 @@ class ReactBlockNode(template.Node):
 @register.tag(name='react')
 def do_react_block(parser, token):
     """
-    Render a React component with kwargs as attributes. This current requires that all kwargs
+    Render a React component with kwargs as attributes. This currently requires that all kwargs
     being passed in be JSON-serializable.
     """
     bits = token.split_contents()
@@ -85,8 +90,4 @@ def do_react_block(parser, token):
 
     nodelist = parser.parse(('endreact',))
     parser.delete_first_token()
-
-    if 'id' not in kwargs:
-        kwargs['id'] = str(uuid.uuid4())
-
-    return ReactBlockNode(component, kwargs['id'], nodelist, **kwargs)
+    return ReactBlockNode(component, nodelist, **kwargs)
