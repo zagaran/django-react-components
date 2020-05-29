@@ -14,11 +14,13 @@ register = template.Library()
 
 
 @register.simple_tag
-def react_component(component_name, id=str(uuid.uuid4()), props=None, **kwargs):
+def react_component(component_name, id=None, props=None, **kwargs):
     """
     Render a React component with kwargs as attributes. This current requires that all kwargs
     being passed in be JSON-serializable.
     """
+    if id is None:
+        id = str(uuid.uuid4())
     if props is None:
         props = {}
     props.update(id=id)
@@ -41,7 +43,9 @@ def react_component(component_name, id=str(uuid.uuid4()), props=None, **kwargs):
 
 
 class ReactBlockNode(template.Node):
-    def __init__(self, component, nodelist, id=str(uuid.uuid4()), props=None, **kwargs):
+    def __init__(self, component, nodelist, id=None, props=None, **kwargs):
+        if id is None:
+            id = str(uuid.uuid4())
         self.component = component
         self.html_id = id
         self.props = props
