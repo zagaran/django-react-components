@@ -5,6 +5,7 @@ import json
 import uuid
 
 from django import template
+from django.conf import settings
 from django.template import TemplateSyntaxError
 from django.template.base import token_kwargs
 from django.utils.html import format_html
@@ -12,6 +13,7 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
+encoder_class = getattr(settings, "DJANGO_REACT_JSON_ENCODER", None)
 
 @register.simple_tag
 def react_component(component_name, id=str(uuid.uuid4()), props=None, **kwargs):
@@ -23,7 +25,7 @@ def react_component(component_name, id=str(uuid.uuid4()), props=None, **kwargs):
         props = {}
     props.update(id=id)
     props.update(kwargs)
-    json_props = json.dumps(props).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
+    json_props = json.dumps(props, cls=encoder_class).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
     react_component_html = """
         <div id="{html_id}"></div>
         <script type="text/javascript">
@@ -56,7 +58,7 @@ class ReactBlockNode(template.Node):
             resolved_props.update(self.props.resolve(context))
         resolved_props['id'] = html_id
         resolved_props['children'] = self.nodelist.render(context)
-        json_props = json.dumps(resolved_props).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
+        json_props = json.dumps(resolved_props, cls=encoder_class).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
         react_component_html = """
             <div id="{html_id}"></div>
             <script type="text/javascript">
