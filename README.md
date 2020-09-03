@@ -56,7 +56,7 @@ $ yarn add django-react-loader webpack-bundle-tracker --dev
 
 ### Configuration
 
-You will need to create a file called `nwb.config.js` to confiugure `nwb` to properly compile your components. Check out `nwb`'s (configuration guide)[https://github.com/insin/nwb/blob/master/docs/Configuration.md#configuration-file] for more details. Also look at their (webpack configuration options)[https://github.com/insin/nwb/blob/master/docs/Configuration.md#webpack-configuration]. 
+You will need to create a file called `nwb.config.js` to configure `nwb` to properly compile your components. Check out `nwb`'s (configuration guide)[https://github.com/insin/nwb/blob/master/docs/Configuration.md#configuration-file] for more details. Also look at their (webpack configuration options)[https://github.com/insin/nwb/blob/master/docs/Configuration.md#webpack-configuration]. 
 
 In your config file, add `django-react-loader` as a loader to the webpack section of it. For example:
 
@@ -172,6 +172,11 @@ In your templates, you can render React components by using the `{% react_compon
     {% endreact 'App' id='app' %}
 </body>
 ```
+
+### Custom Props Encoding
+
+`django_react_components` uses JSON to encode props into the React components. You can specify a custom JSON encoder 
+class with the `DJANGO_REACT_JSON_ENCODER` settings in your settings file. It will be passed to `json.dumps(props, cls=MyJSONEncoder)`
 
 ## Requirements
 
