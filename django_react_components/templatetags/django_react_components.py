@@ -9,11 +9,16 @@ from django.conf import settings
 from django.template import TemplateSyntaxError
 from django.template.base import token_kwargs
 from django.utils.html import format_html
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-encoder_class = getattr(settings, "DJANGO_REACT_JSON_ENCODER", None)
+encoder_class_import_string = getattr(settings, "DJANGO_REACT_JSON_ENCODER", "django.core.serializers.json.DjangoJSONEncoder")
+if not isinstance(encoder_class_import_string, str):
+    raise ImportError("DJANGO_REACT_JSON_ENCODER must be set as an import string.")
+else:
+    encoder_class = import_string(encoder_class_import_string)
 
 @register.simple_tag
 def react_component(component_name, id=None, props=None, **kwargs):
