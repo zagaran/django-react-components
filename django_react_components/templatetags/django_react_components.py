@@ -8,6 +8,7 @@ from django import template
 from django.conf import settings
 from django.template import TemplateSyntaxError
 from django.template.base import token_kwargs
+from django.template.loader import render_to_string
 from django.utils.html import format_html
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
@@ -20,18 +21,43 @@ if not isinstance(encoder_class_import_string, str):
 else:
     encoder_class = import_string(encoder_class_import_string)
 
-@register.simple_tag
-def react_component(component_name, id=None, props=None, **kwargs):
-    """
-    Render a React component with kwargs as attributes. This current requires that all kwargs
-    being passed in be JSON-serializable.
-    """
-    if id is None:
-        id = str(uuid.uuid4())
+
+def initialize_props(props, html_id=None):
+    """Initialize is and props."""
+    if html_id is None:
+        html_id = str(uuid.uuid4())
     if props is None:
         props = {}
-    props.update(id=id)
+    if "html_id" not in props:
+        props.update(html_id=html_id)
+    return props
+
+
+@register.simple_tag
+def react_widget(component_name, html_id=None, props=None, **kwargs):
+    """
+    Render a standalone react widget, including boilerplate loading code. This currently requires
+    all kwargs beings passed to be JSON-serializable.
+    """
+    props = initialize_props(props, html_id=html_id)
     props.update(kwargs)
+    return render_to_string(
+        "django_react_components/react_widget.html",
+        context={
+            **props,
+            "react_component_name": component_name
+        }
+    )
+
+
+@register.simple_tag
+def render_react(component_name, props=None):
+    """
+    Render a React component with kwargs as attributes. This currently requires that all kwargs
+    being passed in be JSON-serializable.
+    """
+    props = initialize_props(props)
+    html_id = props["html_id"]
     json_props = json.dumps(props, cls=encoder_class).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
     react_component_html = """
         <div id="{html_id}"></div>
@@ -44,17 +70,17 @@ def react_component(component_name, id=None, props=None, **kwargs):
     return format_html(
         react_component_html,
         props=mark_safe(json_props),
-        html_id=id,
+        html_id=html_id,
         component_name=component_name,
     )
 
 
 class ReactBlockNode(template.Node):
-    def __init__(self, component, nodelist, id=None, props=None, **kwargs):
-        if id is None:
-            id = str(uuid.uuid4())
+    def __init__(self, component, nodelist, html_id=None, props=None, **kwargs):
+        if html_id is None:
+            html_id = str(uuid.uuid4())
         self.component = component
-        self.html_id = id
+        self.html_id = html_id
         self.props = props
         self.kwargs = kwargs
         self.nodelist = nodelist
@@ -65,21 +91,14 @@ class ReactBlockNode(template.Node):
         resolved_props = {key: value.resolve(context) for key, value in self.kwargs.items()}
         if self.props is not None:
             resolved_props.update(self.props.resolve(context))
-        resolved_props['id'] = html_id
+        resolved_props['html_id'] = html_id
         resolved_props['children'] = self.nodelist.render(context)
-        json_props = json.dumps(resolved_props, cls=encoder_class).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
-        react_component_html = """
-            <div id="{html_id}"></div>
-            <script type="text/javascript">
-                window.reactComponents.{component}.init('{props}')
-                window.reactComponents.{component}.render()
-            </script>
-        """
-        return format_html(
-            react_component_html,
-            props=mark_safe(json_props),
-            html_id=html_id,
-            component=component
+        return render_to_string(
+            "django_react_components/react_widget.html",
+            context={
+                **resolved_props,
+                "react_component_name": component
+            }
         )
 
 

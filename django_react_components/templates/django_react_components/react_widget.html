@@ -1,0 +1,6 @@
+{% load render_bundle from webpack_loader %}
+{% load templatetage %}
+
+{% render_bundle 'runtime' %}
+{% render_bundle react_component_name %}
+{% render_react react_component_name props=props %}

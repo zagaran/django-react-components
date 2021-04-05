@@ -5,6 +5,7 @@
 #    pip-compile
 #
 asgiref==3.2.7            # via django
+django-webpack-loader==0.7.0
 django==3.0.7
 pytz==2019.2              # via django
 sqlparse==0.3.0           # via django

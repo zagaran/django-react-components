@@ -34,6 +34,10 @@ setup(
         'Topic :: Software Development :: User Interfaces',
     ],
     description='A collection of tools that assist with loading and rendering React components',
+    install_requires=[
+        "django",
+        "django-webpack-loader"
+    ],
     license='MIT',
     long_description=README,
     long_description_content_type="text/markdown",
