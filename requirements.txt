@@ -6,7 +6,7 @@
 #
 asgiref==3.3.4
     # via django
-django==3.2.4
+django==3.2.6
     # via -r requirements.in
 pytz==2019.2
     # via django
