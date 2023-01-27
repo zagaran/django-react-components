@@ -4,11 +4,9 @@
 #
 #    pip-compile
 #
-asgiref==3.4.1
+asgiref==3.6.0
     # via django
-django==3.2.7
+django==4.1.5
     # via -r requirements.in
-pytz==2021.1
-    # via django
 sqlparse==0.4.2
     # via django
