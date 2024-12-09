@@ -21,18 +21,18 @@ else:
     encoder_class = import_string(encoder_class_import_string)
 
 @register.simple_tag
-def react_component(component_name, id=None, props=None, **kwargs):
+def react_component(component_name, component_id=None, props=None, **kwargs):
     """
     Render a React component with kwargs as attributes. This current requires that all kwargs
     being passed in be JSON-serializable.
     """
-    if id is None:
-        id = str(uuid.uuid4())
+    if component_id is None:
+        component_id = str(uuid.uuid4())
     if props is None:
         props = {}
-    props.update(id=id)
+    props.update(id=component_id)
     props.update(kwargs)
-    props_id = id+'_props'
+    props_id = component_id+'_props'
 
     react_component_html = """
         <div id="{html_id}"></div>
@@ -47,17 +47,17 @@ def react_component(component_name, id=None, props=None, **kwargs):
         react_component_html,
         props_id=props_id,
         props=json_script(props, props_id),
-        html_id=id,
+        html_id=component_id,
         component_name=component_name,
     )
 
 
 class ReactBlockNode(template.Node):
-    def __init__(self, component, nodelist, id=None, props=None, **kwargs):
-        if id is None:
-            id = str(uuid.uuid4())
+    def __init__(self, component, nodelist, component_id=None, props=None, **kwargs):
+        if component_id is None:
+            component_id = str(uuid.uuid4())
         self.component = component
-        self.html_id = id
+        self.html_id = component_id
         self.props = props
         self.kwargs = kwargs
         self.nodelist = nodelist
