@@ -46,7 +46,7 @@ def react_component(component_name, component_id=None, props=None, **kwargs):
     return format_html(
         react_component_html,
         props_id=props_id,
-        props=json_script(props, props_id),
+        props=json_script(props, props_id, encoder=encoder_class),
         html_id=component_id,
         component_name=component_name,
     )
