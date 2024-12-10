@@ -70,17 +70,20 @@ class ReactBlockNode(template.Node):
             resolved_props.update(self.props.resolve(context))
         resolved_props['id'] = html_id
         resolved_props['children'] = self.nodelist.render(context)
-        json_props = json.dumps(resolved_props, cls=encoder_class).replace("</", "<\\/").replace("\\", "\\\\").replace("'", "\\'")
+        props_id = html_id + '_props'
+
         react_component_html = """
             <div id="{html_id}"></div>
+            {props}
             <script type="text/javascript">
-                window.reactComponents.{component}.init('{props}')
+                window.reactComponents.{component}.init(document.getElementById("{props_id}").textContent)
                 window.reactComponents.{component}.render()
             </script>
         """
         return format_html(
             react_component_html,
-            props=mark_safe(json_props),
+            props=json_script(resolved_props, props_id, encoder=encoder_class),
+            props_id=props_id,
             html_id=html_id,
             component=component
         )
