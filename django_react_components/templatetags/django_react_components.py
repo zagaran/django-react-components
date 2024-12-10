@@ -1,7 +1,6 @@
 """
 Template tags for django-react-components
 """
-import json
 import uuid
 
 from django import template
@@ -10,7 +9,6 @@ from django.template import TemplateSyntaxError
 from django.template.base import token_kwargs
 from django.utils.html import format_html, json_script
 from django.utils.module_loading import import_string
-from django.utils.safestring import mark_safe
 
 register = template.Library()
 
