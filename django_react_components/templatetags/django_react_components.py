@@ -18,6 +18,7 @@ if not isinstance(encoder_class_import_string, str):
 else:
     encoder_class = import_string(encoder_class_import_string)
 
+
 @register.simple_tag
 def react_component(component_name, component_id=None, props=None, **kwargs):
     """
