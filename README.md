@@ -29,14 +29,14 @@ The command may resemble:
 npm install --save-dev webpack
 ```
 
-Install django-react-loader with your preferred package manager: 
+Install `django-react-loader` with your preferred package manager: 
 
 ```bash
 $ npm install --save-dev django-react-loader 
 ```
 _or_
 ```bash
-$ yarn add django-react-loade --dev
+$ yarn add django-react-loader --dev
 ```
 
 ## Usage
@@ -45,16 +45,16 @@ $ yarn add django-react-loade --dev
 
 Configure Webpack: [Webpack Configuration Guide](https://webpack.js.org/configuration/).  The rest of this guide assumes a webpack config file (probably called `webpack.config.js`)
 
-#### Setting up `django_webpack_loader` and `webpack-bundle-tracker`
+#### Setting up `django-webpack-loader` and `webpack-bundle-tracker`
 
 Follow instructions in the [Django Webpack Loader Docs](https://github.com/django-webpack/django-webpack-loader)
 
 #### Setting up `django-react-loader`
 
-Modify the webpack config file so that django-react-loader loads the react files: 
+Modify the webpack config file so that `django-react-loader` loads the react files: 
     * Import the django-react-loader
     * Specify ENTRIES - a mapping of the names of your components to the source code file
-    * Add django-react-loader to loaders
+    * Add `django-react-loader` to loaders
 
 Example configuration outline: 
 
@@ -64,7 +64,7 @@ Example configuration outline:
     ...,
     const ENTRIES = {
         ...,
-        <NameOfComponent>: <PathToComponentSourceCode>,
+        nameOfComponent: componentImportPath
 
     }
     ...,
